@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>🪙 Coin Game</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--tailwind css-->
+  <link href="./index.css" rel="stylesheet">
+  <!--htmx import-->
+  <script type="module" src="index.js"></script>
+  <!-- table style inline -->
+<style>
+table.customTable {
+  width: 100%;
+  background-color: #FFFFFF;
+  border-collapse: collapse;
+  border-width: 2px;
+  border-color: #303738;
+  border-style: solid;
+  color: #000000;
+}
+
+table.customTable td, table.customTable th {
+  border-width: 2px;
+  border-color: #303738;
+  border-style: solid;
+  padding: 5px;
+  text-align:left;
+}
+
+table.customTable thead {
+  background-color: rgb(30,30,30);
+  color: white;
+}
+</style>
+</head>
+<body class="bg-slate-200">
+    <nav class="grid gap-1 grid-cols-2 font-sans">
+      <div class="col-span-1">
+        <ol class="flex flex-row space-x-1">
+          <li class="bg-slate-400 text-white hover:text-black text-center px-5 border-2 font-bold border-black"><a href="./home.html">Home</a></li>
+          <li class="bg-slate-400 text-white hover:text-black text-center px-5 border-2 font-bold border-black"><a href="./status.html">Game Status</a></li>
+          <li class="bg-slate-400 text-white hover:text-black text-center px-5 border-2 font-bold border-black"><a href="./transfer.html">Transfer Funds</a></li>
+        </ol>
+      </div>
+      <div class="col-span-1">
+        <div hx-swap="outerHTML" hx-get="/api/users/registerPrompt" hx-trigger="load"></div>
+        <div class="bg-slate-400 text-white hover:text-black text-center w-52 float-right border-2 font-bold border-black" hx-get="/api/users/loginPrompt" hx-trigger="load"></div>
+      </div>
+    </nav>
+    <div class="container mx-auto mt-10 bg-slate-400 rounded-md shadow-2xl">
+      <h1 class="text-xl text-white font-bold font-sans text-center p-2">Top 100 Users</h1>
+      <table hx-get="/api/top" hx-swap="outerHTML" hx-trigger="load"></table>
+    </div>
+</body>
+</html>

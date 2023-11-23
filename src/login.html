@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>🪙 Coin Game</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--tailwind css-->
+  <link href="./index.css" rel="stylesheet">
+  <!--htmx import-->
+  <script type="module" src="index.js"></script>
+</head>
+<body class="bg-slate-200">
+  <div id="LoginForm" class="container text-white mx-auto mt-10 bg-slate-500 rounded-md shadow-2xl p-5 text-lg">
+    <h1 class="text-white font-bold font-sans text-xl ">Login Page</h1>
+    <div id="login">
+      <form class="grid-cols-1" action="/api/users/login" method="POST" enctype="application/x-www-form-urlencoded">
+        <div class="col-span-1 grid grid-cols-1">
+          <label class="col-span-1" for="username">Enter your username:</label>
+          <input class="text-black col-span-1 border-2 border-black" type="text" name="username" required />
+        </div>
+        <div class="col-span-1 grid grid-cols-1">
+          <label class="col-span-1" for="password">Enter your password:</label>
+          <input class="text-black col-span-1 border-2 border-black" type="password" name="password" required/>
+        </div>
+        <!--
+        <div class="col-span-1 grid grid-cols-2">
+          <label class="col-span-1" for="remember">Remember Me</label>
+          <input class="col-span-1" type="checkbox" name="remember"/>
+        </div>
+        -->
+        <div class="col-span-1 my-2 grid-cols-1">
+          <input type="submit" class="text-black bg-white border-2 p-1 border-black underline hover:bg-slate-200 hover:cursor-pointer" value="Login">
+        </div>
+      </form>
+      <!--register button-->
+      <div>
+        <p>New to coin game?  <a href="/register" class="text-black bg-white border-2 p-1 border-black underline hover:bg-slate-200">Register here</a></p>
+      </div>
+    </div>
+  </div>
+  <script>
+    // ugly inline js hack
+    if (document.location.search === '?wrongPassword=1'){
+      alert("Wrong Password")
+    }
+    if (document.location.search === '?wrongUsername=1'){
+      alert("No user with specified username exists")
+    }
+  </script>
+</body>
+</html>

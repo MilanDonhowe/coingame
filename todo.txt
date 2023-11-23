@@ -1,0 +1,9 @@
+v1:
+- create accounts & trade coins
+- top 100 leaderboard
+- add some style consistency
+- collect usage metrics
+
+v2:
+- add password confirmation field for usability (front-end only; power-users can cope with their own requests)
+- email verification w/ reset-password functionality
