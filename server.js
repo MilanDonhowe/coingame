@@ -3,9 +3,12 @@
 const Koa = require('koa')
 const crypto = require('crypto')
 
-// DOM Purify for securing SSR
+// DOM Purify for securing SSR (when adding HTML)
 const createDOMPurify = require('dompurify');
 const { JSDOM } = require('jsdom');
+
+// views for dynamic SSR
+const views = require('@ladjs/koa-views');
 
 const window = new JSDOM('').window;
 const DOMPurify = createDOMPurify(window);
@@ -22,6 +25,7 @@ const { db } = require("./db");
 
 // initialize Koa application
 const app = new Koa()
+
 
 // keys for signing cookies (uses KeyGrip under the hood)
 app.keys = [crypto.randomBytes(32).toString('hex'), crypto.randomBytes(32).toString('hex'), crypto.randomBytes(32).toString('hex')]
