@@ -130,17 +130,30 @@ router.post("/transfer", async (ctx, next) => {
             // add & subtract funds atomically (no double-spend!!!!!)
             ctx.db.run("UPDATE OR FAIL wallets SET coins = (CASE WHEN id = ? THEN coins + ? WHEN id = ? THEN coins - ? END) WHERE id IN (?, ?) AND (SELECT coins FROM wallets WHERE id = ?) >= ?",
                 [recepient_wallet, coins, sender_wallet, coins, recepient_wallet, sender_wallet, sender_wallet, coins], function (res, err) {
-                    console.log("test:", this.lastID, res)
+                    // console.log("test:", this.lastID, res)
                     if (err || this.lastID === undefined){
                         reject (err || "unknown sql error (lastID = 0)")
                         return
                     }
+                    // transaction worked!
+
+                    // at this point let's try to add a record to the transaction table to maintain a history of transactions
+                    // no need to use a promise here, a regular callback is fine.
+                    ctx.db.run("INSERT INTO transactions VALUES (?,?,?,?)", [sender_wallet, recepient_wallet, coins, Date.now()], function(res, err){
+                        if (err || this.lastID === undefined){
+                            console.error("[*] ERROR: Could not add ")
+                        }
+                        console.log("[*] transaction recorded in db.")
+                    })
+
                     resolve("success")
             })
         }).catch(err => {
             console.error(`[*] failed to transfer ${coins} coins from wallet #${sender_wallet} to wallet #${recepient}.\nError="${err}"`)
             ctx.throw(500) // can't set custom messages with error code 500 by default...
         })
+
+        // Inform client of successful transaction
         ctx.body = ctx.DOMPurify.sanitize(`
         <html>
             <body>

@@ -7,9 +7,6 @@ const crypto = require('crypto')
 const createDOMPurify = require('dompurify');
 const { JSDOM } = require('jsdom');
 
-// views for dynamic SSR
-const views = require('@ladjs/koa-views');
-
 const window = new JSDOM('').window;
 const DOMPurify = createDOMPurify(window);
 
@@ -48,7 +45,7 @@ app.use(async (ctx, next) => {
   await next()
 })
 
-const publicFiles = serve(path.join(__dirname, 'public'));
+// const publicFiles = serve(path.join(__dirname, 'public'));
 
 // Attach Dynamic API Routes
 const userRouter = require('./routes/users')

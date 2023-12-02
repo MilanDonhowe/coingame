@@ -38,6 +38,16 @@ db.serialize(() => {
         PRIMARY KEY("id" AUTOINCREMENT)
     );`)
 
+    // create transactions table
+    // this is purely for accounting purposes
+    db.run(`
+    CREATE TABLE IF NOT EXISTS "transactions" (
+        "sender_wallet_id" INTEGER NOT NULL,
+        "recepient_wallet_id"  INTEGER NOT NULL,
+        "coins" INTEGER NOT NULL,
+        "time" INTEGER NOT NULL
+    );`)
+
     // TO-DO: maybe create another data-store for session storage
     console.log("[*] DONE BUILDING DB")
 });
