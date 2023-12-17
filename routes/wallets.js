@@ -152,7 +152,8 @@ router.post("/click", async (ctx, next) => {
         return
     }
     // otherwise error--todo: redirect to error page
-    ctx.throw(404, "<div>Error: user not logged in</div>")
+    ctx.body = "<div>Error: user not logged in</div>"
+    //ctx.throw(404, "<div>Error: user not logged in</div>") // <-- HTMX doesn't let 400 responses get embedded (*eye roll*)
 })
 
 // this one is for all the marbles

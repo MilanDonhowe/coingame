@@ -78,7 +78,7 @@ router.get("/loginPrompt", async (ctx, next) => {
         ctx.body = `<a href="/api/users/logout">Logout</a>`
         return
     } else {
-        ctx.body = `<a href="/login">Login</a>`
+        ctx.body = `<a href="/login.html">Login</a>`
     }
 })
 router.get("/registerPrompt", async (ctx, next) => {
@@ -87,7 +87,7 @@ router.get("/registerPrompt", async (ctx, next) => {
         return
     } else {
         // TODO: figure out how to not put tailwind css in these freaking routes
-        ctx.body = `<div class="bg-slate-400 text-white hover:text-black text-center w-52 float-right border-2 font-bold border-black"><a href="/register">Register</a></div>`
+        ctx.body = `<div class="bg-slate-400 text-white hover:text-black text-center w-52 float-right border-2 font-bold border-black"><a href="/register.html">Register</a></div>`
     }
 })
 

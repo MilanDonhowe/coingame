@@ -45,7 +45,7 @@ app.use(async (ctx, next) => {
   await next()
 })
 
-// const publicFiles = serve(path.join(__dirname, 'public'));
+const publicFiles = serve(path.join(__dirname, 'public'));
 
 // Attach Dynamic API Routes
 const userRouter = require('./routes/users')
@@ -72,8 +72,8 @@ process.on('SIGINT', () => {
   process.exit()
 })
 
-// publicFiles._name = 'static /public';
-//app.use(publicFiles)
+//publicFiles._name = 'static /public';
+app.use(publicFiles)
 
 app.use(async ctx => {
   if (ctx.path === "/top" && ctx.method === "GET"){
