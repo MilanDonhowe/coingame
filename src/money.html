@@ -1,0 +1,10 @@
+<!DOCTYPE HTML>
+<html>
+<include src="header.html"></include>
+<body class="bg-slate-200">
+    <include src="nav.html"></include>
+    <!--<div hx-get="/api/wallets/coins" hx-trigger="load"></div>-->
+    <button hx-post="/api/wallets/click" hx-target="#result">+1 Coin</button>
+    <div id="result"></div>
+</body>
+</html>

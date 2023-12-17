@@ -30,8 +30,15 @@ router.post("/register", async (ctx, next) => {
             resolve(this.lastID) // <-- id of created user entity
         })
     })).catch(err => {
+        // SQLite3 Constraint Error:
+        if (err.errno === 19){
+            // TODO: implement HTML error page
+            ctx.throw(400, "User with that username already exists")
+            return
+        }
+        // otherwise, unknown error
         console.error(`[*] Error creating user in SQLite: ${err}`)
-        ctx.throw(500, err)
+        ctx.throw(500)
     })
 
     // create default wallet
@@ -132,17 +139,19 @@ router.get("/info", async (ctx, next) => {
     const userID = ctx.cookies.get("user", { signed: true })
     if (userID){
       const user = await (new Promise((resolve, reject) => {
-        ctx.db.get("SELECT * FROM users WHERE id = ?", [userID], (err, row) => {
+        ctx.db.get("SELECT u.id, u.username, w.coins FROM users u JOIN wallets w ON u.default_wallet_id = w.id WHERE u.id = ?", [userID], (err, row) => {
             if (err) reject(err)
             resolve(row)
         })
       }))
+      
       // DOMPurify to prevent XSS
       ctx.body = ctx.DOMPurify.sanitize(`
       <div>
         <ol>
           <li>User ID: ${user.id}</li>
           <li>Username: ${user.username}</li>
+          <li>Coins: ${user.coins}</li>
         </ol>
       </div>
       `)
@@ -172,6 +181,6 @@ router.get("/wallets", async (ctx, next) => {
         ctx.throw(403, "User not logged in.")
     }
 })
-  
+
 
 module.exports = router

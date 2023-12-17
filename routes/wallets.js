@@ -10,6 +10,51 @@ const router = new Router({ prefix: '/wallets' })
 // TODO: make this dynamically configurable
 const DEFAULT_WALLET_AMOUNT = 10;
 
+
+/*
+    DB Functions
+*/
+function getDefaultWallet(db, user_id){
+    return new Promise((resolve, reject) => {
+        db.get("SELECT default_wallet_id FROM users WHERE id = ?", [user_id], function(err, row){
+            if (err){
+                reject(err)
+                return
+            }
+            resolve(row.default_wallet_id)
+        })
+    })
+}
+
+function getWalletById(db, wallet_id){
+    return new Promise((resolve, reject) => {
+        db.get("SELECT * FROM wallets WHERE id = ?", [wallet_id], function(err, row){
+            if (err){
+                reject(err)
+                return
+            }
+            resolve(row)
+        })
+    })
+}
+
+function incrementFunds(db, wallet_id){
+    return new Promise((resolve, reject) => {
+        db.run("UPDATE wallets SET coins = coins + 1 WHERE id = ?", [wallet_id], function(res, err){
+            if (err || this.lastID === undefined){
+                reject(err || "unknown sql error (lastID = 0)")
+                return
+            }
+            resolve("success")
+        })
+    })
+}
+
+
+
+/**
+ * API ROUTES
+*/
 router.post("/create", async (ctx, next) => {
     // need userID
     const userID = ctx.cookies.get("user", { signed: true })
@@ -57,6 +102,57 @@ router.get("/transfer", async (ctx, next) => {
       //ctx.redirect("/login")
       ctx.body = `<div>Please login to transfer funds.</div>` 
     }
+})
+
+// check coins
+router.get("/coins", async (ctx, next) => {
+    const userID = ctx.cookies.get("user", {signed: true})
+    if (userID){
+        const wallet_id = await getDefaultWallet(ctx.db, userID)
+            .catch(err => {
+                console.error(`[*] Failed to get default wallet id for user id=${userID}.  SQL ERROR: ${err}`)
+                ctx.throw(404, "<div>Could not find wallet for user.</div>")
+            })
+        if (wallet_id === undefined) return;
+
+        const wallet = await getWalletById(ctx.db, wallet_id)
+            .catch(err => {
+                console.error(`[*] Failed to find wallet with id=${wallet_id}.  SQL ERROR: ${err}`)
+                ctx.throw(500)
+            })
+        if (wallet === undefined) return;
+
+        ctx.body = `<div>Total Coins: ${wallet.coins}</div>`
+        return;
+    }
+    ctx.throw(404, "<div>User not logged in.</div>")
+})
+
+// make money
+router.post("/click", async (ctx, next) => {
+    const userID = ctx.cookies.get("user", {signed: true})
+    if (userID){
+        // add + 1 to wallet 
+        // get wallet
+        const wallet_id = await getDefaultWallet(ctx.db, userID)
+            .catch(err => {
+                console.error(`[*] ERROR: could not acquire wallet id for user id: ${userID}.  SQL ERROR: "${err}"`)
+                ctx.throw(404, "<div>user has no default wallet id</div>")
+            })
+        // return to avoid run-to-completion (stupid javascript)
+        if (wallet_id === undefined) return
+
+        await incrementFunds(ctx.db, wallet_id)
+            .catch(err => {
+                console.error(`[*] ERROR: could not increment coin wallet amount.  SQL ERROR: "${err}"`)
+                ctx.throw(500)
+            })
+        
+        ctx.body = `<div>[${Date.now()}] Successfully generated 1 coin!</div>`
+        return
+    }
+    // otherwise error--todo: redirect to error page
+    ctx.throw(404, "<div>Error: user not logged in</div>")
 })
 
 // this one is for all the marbles
